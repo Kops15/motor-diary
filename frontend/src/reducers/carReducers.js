@@ -24,6 +24,9 @@ import {
 	FUEL_DELETE_REQUEST,
 	FUEL_DELETE_SUCCESS,
 	FUEL_DELETE_FAIL,
+	CAR_READING_REQUEST,
+	CAR_READING_SUCCESS,
+	CAR_READING_FAIL,
 } from "../constants/carConstants";
 
 export const carRegisterReducer = (state = {}, action) => {
@@ -80,6 +83,20 @@ export const carDetailsReducer = (state = { car: {} }, action) => {
 		case CAR_DETAILS_SUCCESS:
 			return { loading: false, car: action.payload };
 		case CAR_DETAILS_FAIL:
+			return { loading: false, error: action.payload };
+
+		default:
+			return state;
+	}
+};
+export const carReadingReducer = (state = { reading: {} }, action) => {
+	switch (action.type) {
+		case CAR_READING_REQUEST:
+			return { ...state, loading: true };
+		case CAR_READING_SUCCESS:
+			console.log(action.payload);
+			return { loading: false, reading: action.payload };
+		case CAR_READING_FAIL:
 			return { loading: false, error: action.payload };
 
 		default:

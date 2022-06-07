@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import moment from "moment";
 import Car from "../models/carModel.js";
+import Journey from "../models/journeyModel.js";
 
 const registerCar = asyncHandler(async (req, res) => {
 	const {
@@ -345,6 +346,41 @@ const getFuelByCarId = asyncHandler(async (req, res) => {
 	}
 });
 
+const getCarReading = asyncHandler(async (req, res) => {
+	const startDate = req.query.startDate;
+	const endDate = req.query.endDate;
+
+	const startJourney = await Journey.find({
+		$and: [
+			{ "driver.carId": new RegExp(req.params.id, "i") },
+			{
+				"journey.journeyDate": {
+					$gte: moment(startDate).toISOString(),
+					$lte: moment(startDate).add(1, "days").toISOString(),
+				},
+			},
+		],
+	});
+	const endJourney = await Journey.find({
+		$and: [
+			{ "driver.carId": new RegExp(req.params.id, "i") },
+			{
+				"journey.journeyDate": {
+					$gte: moment(endDate).toISOString(),
+					$lte: moment(endDate).add(1, "days").toISOString(),
+				},
+			},
+		],
+	});
+
+	const readings = {
+		startReading: parseInt(startJourney[0].journey.startReading),
+		endReading: parseInt(endJourney[0].journey.endReading),
+	};
+	console.log(typeof readings.startReading, typeof readings.endReading);
+	res.json({ readings });
+});
+
 export {
 	getCarById,
 	getCars,
@@ -356,4 +392,5 @@ export {
 	updateMaintenance,
 	getFuelByCarId,
 	deleteFuelById,
+	getCarReading,
 };

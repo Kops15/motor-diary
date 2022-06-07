@@ -15,6 +15,7 @@ import {
 	carAddMaintenanceReducer,
 	carMaintenanceDetailsReducer,
 	carUpdateMaintenanceReducer,
+	carReadingReducer,
 	deleteFuelReducer,
 } from "./reducers/carReducers";
 import {
@@ -46,6 +47,7 @@ const reducer = combineReducers({
 	expenseList: expenseListReducer,
 	carMaintenanceDetails: carMaintenanceDetailsReducer,
 	carUpdateMaintenance: carUpdateMaintenanceReducer,
+	carReading: carReadingReducer,
 	deleteFuel: deleteFuelReducer,
 	updateDepartment: updateDepartmentReducer,
 });

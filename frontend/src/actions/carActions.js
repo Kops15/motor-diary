@@ -24,6 +24,9 @@ import {
 	FUEL_DELETE_REQUEST,
 	FUEL_DELETE_SUCCESS,
 	FUEL_DELETE_FAIL,
+	CAR_READING_REQUEST,
+	CAR_READING_SUCCESS,
+	CAR_READING_FAIL,
 } from "../constants/carConstants";
 
 export const registerCar =
@@ -326,6 +329,37 @@ export const deleteFuelWithId = (id, fuelDeleteId) => async (dispatch) => {
 	} catch (error) {
 		dispatch({
 			type: FUEL_DELETE_FAIL,
+			payload:
+				error.response && error.response.data.message
+					? error.response.data.message
+					: error.message,
+		});
+	}
+};
+
+export const getCarReading = (startDate, endDate, id) => async (dispatch) => {
+	try {
+		dispatch({
+			type: CAR_READING_REQUEST,
+		});
+		const config = {
+			headers: {
+				"Content-Type": "application/json",
+			},
+		};
+
+		const { data } = await axios.get(
+			`/api/admin/cars/readings/${id}?endDate=${endDate}&startDate=${startDate}`,
+			config,
+		);
+		console.log(data);
+		dispatch({
+			type: CAR_READING_SUCCESS,
+			payload: data,
+		});
+	} catch (error) {
+		dispatch({
+			type: CAR_READING_FAIL,
 			payload:
 				error.response && error.response.data.message
 					? error.response.data.message

@@ -30,6 +30,7 @@ import {
 	deleteFuelWithId,
 	getCarDetails,
 	getCarList,
+	getCarReading,
 } from "../../actions/carActions";
 import csv from "../../Utils/Images/csv.png";
 import { downloadFile } from "../../actions/downloadFile";
@@ -64,6 +65,8 @@ const FuelMaintenance = () => {
 	const { cars } = carList;
 	const carDetails = useSelector((state) => state.carDetails);
 	const { car } = carDetails;
+	const carReading = useSelector((state) => state.carReading);
+	const { reading } = carReading;
 
 	const deleteFuel = useSelector((state) => state.deleteFuel);
 	const { success: deleteSuccess } = deleteFuel;
@@ -80,6 +83,7 @@ const FuelMaintenance = () => {
 	};
 
 	const exportToCsv = (e) => {
+		console.log(reading);
 		let workbook = new Workbook();
 		let totalAmount = 0;
 		let totalFuel = 0;
@@ -89,10 +93,10 @@ const FuelMaintenance = () => {
 			totalFuel = totalFuel + car.quantity;
 		});
 
-		let startReading;
-		let endReading;
-
 		let title = `${" "} ${" "} ${" "} ${" "} ${" "} ${" "} ${"Fuel Maintenance "}`;
+		let subTitle = `${" "} ${" "} ${" "} ${" "} ${" "} ${" "} ${"Fuel Maintenance for"} ${
+			selectCar?.carName
+		}-${selectCar?.carNumber}`;
 
 		let headers = ["Date", " ", "Reading", "Amount", "Fuel Qty(liter)"];
 
@@ -118,12 +122,12 @@ const FuelMaintenance = () => {
 			bold: true,
 		};
 
-		// let headerDescription = workSheet.addRow([subTitle]);
-		// headerDescription.font = {
-		// 	name: "Roboto sans-serif",
-		// 	family: 4,
-		// 	size: 8,
-		// };
+		let headerDescription = workSheet.addRow([subTitle]);
+		headerDescription.font = {
+			name: "Roboto sans-serif",
+			family: 4,
+			size: 8,
+		};
 
 		workSheet.addRow([]);
 
@@ -153,61 +157,22 @@ const FuelMaintenance = () => {
 			let qty = row.getCell(5);
 		});
 
-		let footerTotal = [
-			" ",
-			"Total",
-			"",
-			`${totalAmount}`,
-			`${totalFuel}`,
-			// `${" "} ${" "} ${"Start:"} ${startMonthReading}`,
-			// `${" "} ${" "} ${"End:"} ${endMonthReading}`,
-			// `${" "} ${" "} ${"Total KM:"} ${endMonthReading - startMonthReading}`,
-			// `${" "} ${" "} ${"Average:"} ${
-			// 	(endMonthReading - startMonthReading) / totalFuel
-			// }`,
-		];
+		let footerTotal = [" ", "Total", "", `${totalAmount}`, `${totalFuel}`];
 		let footerStart = [
 			" ",
 			"",
 			"",
 			"Start Km",
-			`${carFuel[0]?.reading}`,
-
-			// `${" "} ${" "} ${"Start:"} ${startMonthReading}`,
-			// `${" "} ${" "} ${"End:"} ${endMonthReading}`,
-			// `${" "} ${" "} ${"Total KM:"} ${endMonthReading - startMonthReading}`,
-			// `${" "} ${" "} ${"Average:"} ${
-			// 	(endMonthReading - startMonthReading) / totalFuel
-			// }`,
+			`${reading?.readings?.startReading}`,
 		];
-		let footerEnd = [
-			" ",
-			"",
-			"",
-			"End Km",
-			`${carFuel[carFuel?.length - 1].reading}`,
-
-			// `${" "} ${" "} ${"Start:"} ${startMonthReading}`,
-			// `${" "} ${" "} ${"End:"} ${endMonthReading}`,
-			// `${" "} ${" "} ${"Total KM:"} ${endMonthReading - startMonthReading}`,
-			// `${" "} ${" "} ${"Average:"} ${
-			// 	(endMonthReading - startMonthReading) / totalFuel
-			// }`,
-		];
+		let footerEnd = [" ", "", "", "End Km", `${reading?.readings?.endReading}`];
 
 		let footerTotalReading = [
 			" ",
 			"",
 			"",
 			"Total Reading",
-			`${carFuel[carFuel?.length - 1].reading - carFuel[0]?.reading}`,
-
-			// `${" "} ${" "} ${"Start:"} ${startMonthReading}`,
-			// `${" "} ${" "} ${"End:"} ${endMonthReading}`,
-			// `${" "} ${" "} ${"Total KM:"} ${endMonthReading - startMonthReading}`,
-			// `${" "} ${" "} ${"Average:"} ${
-			// 	(endMonthReading - startMonthReading) / totalFuel
-			// }`,
+			`${reading?.readings?.endReading - reading?.readings?.startReading}`,
 		];
 
 		let footerAvg = [
@@ -215,9 +180,10 @@ const FuelMaintenance = () => {
 			"",
 			"",
 			"Average",
-			`${
-				(carFuel[carFuel?.length - 1].reading - carFuel[0]?.reading) / totalFuel
-			}`,
+			`${(
+				(reading?.readings?.endReading - reading?.readings?.startReading) /
+				totalFuel
+			).toFixed(2)}`,
 		];
 
 		workSheet.addRow(footerTotal);
@@ -237,13 +203,6 @@ const FuelMaintenance = () => {
 			);
 		});
 
-		// downloadFile({
-		// 	data: [...title, ...subTitle, ...headers, ...usersCsv, ...footer].join(
-		// 		"\n",
-		// 	),
-		// 	fileName: `${car.carName}-${car.carNumber}_Fuel_History.csv`,
-		// 	fileType: "text/csv",
-		// });
 		setShowModal(false);
 	};
 
@@ -268,25 +227,9 @@ const FuelMaintenance = () => {
 
 			setCarFuel(carArr);
 			sortFuelByDate();
-			carFuel?.forEach((reading) => {
-				if (dateFormat(start) <= dateFormat(reading.date)) {
-					if (dateFormat(endDate) >= dateFormat(reading.date)) {
-						setStartMonthReading(selectCar?.reading[0]?.startReading);
-						setEndMonthReading(
-							selectCar?.reading[selectCar?.reading.length - 1].endReading,
-						);
-					}
-				}
-			});
 		} else {
 			setCarFuel(selectCar?.fuelMaintenance);
 			sortFuelByDate();
-			if (selectCar) {
-				setStartMonthReading(selectCar?.reading[0]?.startReading);
-				setEndMonthReading(
-					selectCar?.reading[selectCar?.reading.length - 1].endReading,
-				);
-			}
 		}
 	};
 
@@ -403,6 +346,13 @@ const FuelMaintenance = () => {
 												max='2040'
 												slot='top'
 												onIonChange={(ev) => {
+													dispatch(
+														getCarReading(
+															dateFormat(startDate),
+															dateFormat(ev.target.value),
+															selectCar._id,
+														),
+													);
 													setEndDate(ev.target.value);
 												}}
 											/>
@@ -412,6 +362,7 @@ const FuelMaintenance = () => {
 									<IonCol class='mr-20'>
 										<IonLabel class='ion-float-right'>
 											<IonButton
+												disabled={endDate ? false : true}
 												onClick={() => {
 													// dispatch(getCarDetails(selectCar?._id));
 													setShowModal(true);

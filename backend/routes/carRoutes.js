@@ -5,6 +5,7 @@ import {
 	addOtherMaintenance,
 	deleteFuelById,
 	getCarById,
+	getCarReading,
 	getCars,
 	getFuelByCarId,
 	getMaintenance,
@@ -26,6 +27,8 @@ router
 	.delete(deleteFuelById);
 
 router.route("/otherMaintenance/:id").post(addOtherMaintenance);
+router.route("/readings/:id").get(getCarReading);
+
 router.route("/fuel/:id").get(getFuelByCarId);
 
 router

@@ -77,10 +77,20 @@ const Journey = () => {
 												<IonLabel>Date & Time</IonLabel>
 											</IonCol>
 
-											<IonCol size='4' className='spx-bold spx-color-white '>
+											<IonCol size='2' className='spx-bold spx-color-white '>
 												<IonLabel>Description Trip</IonLabel>
 											</IonCol>
 
+											<IonCol
+												size='1'
+												className='spx-bold ion-text-center spx-color-white '>
+												<IonLabel>Start KM</IonLabel>
+											</IonCol>
+											<IonCol
+												size='1'
+												className='spx-bold ion-text-center spx-color-white '>
+												<IonLabel>End KM</IonLabel>
+											</IonCol>
 											<IonCol
 												size='2'
 												className='spx-bold ion-text-center spx-color-white '>
@@ -125,12 +135,22 @@ const Journey = () => {
 																			</IonLabel>
 																		</IonCol>
 
-																		<IonCol size='4'>
+																		<IonCol size='2'>
 																			<IonLabel>
 																				{j.journey.startDestination}
 																			</IonLabel>
 																		</IonCol>
 
+																		<IonCol size='1' class='ion-text-center'>
+																			<IonLabel>
+																				{j.journey.startReading}
+																			</IonLabel>
+																		</IonCol>
+																		<IonCol size='1' class='ion-text-center'>
+																			<IonLabel>
+																				{j.journey.endReading}
+																			</IonLabel>
+																		</IonCol>
 																		<IonCol size='2' class='ion-text-center'>
 																			<IonLabel>
 																				{j.journey.endReading -
