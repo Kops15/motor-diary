@@ -175,6 +175,12 @@ const FuelMaintenance = () => {
 			`${reading?.readings?.endReading - reading?.readings?.startReading}`,
 		];
 
+		console.log(
+			"-->",
+			reading?.readings?.endReading - reading?.readings?.startReading,
+			reading?.readings?.endReading,
+			reading?.readings?.startReading,
+		);
 		let footerAvg = [
 			" ",
 			"",

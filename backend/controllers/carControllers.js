@@ -350,34 +350,34 @@ const getCarReading = asyncHandler(async (req, res) => {
 	const startDate = req.query.startDate;
 	const endDate = req.query.endDate;
 
-	const startJourney = await Journey.find({
+	const journey = await Journey.find({
 		$and: [
 			{ "driver.carId": new RegExp(req.params.id, "i") },
 			{
 				"journey.journeyDate": {
 					$gte: moment(startDate).toISOString(),
-					$lte: moment(startDate).add(1, "days").toISOString(),
-				},
-			},
-		],
-	});
-	const endJourney = await Journey.find({
-		$and: [
-			{ "driver.carId": new RegExp(req.params.id, "i") },
-			{
-				"journey.journeyDate": {
-					$gte: moment(endDate).toISOString(),
-					$lte: moment(endDate).add(1, "days").toISOString(),
+					$lte: moment(endDate).toISOString(),
 				},
 			},
 		],
 	});
 
+	console.log(
+		journey[0].journey.startReading,
+		journey[journey.length - 1].journey.endReading,
+	);
+
 	const readings = {
-		startReading: parseInt(startJourney[0].journey.startReading),
-		endReading: parseInt(endJourney[0].journey.endReading),
+		startReading: parseInt(journey[0].journey.startReading),
+		endReading: parseInt(journey[journey.length - 1].journey.endReading),
 	};
-	console.log(typeof readings.startReading, typeof readings.endReading);
+	// console.log(readings);
+	// console.log(
+	// 	readings.startReading,
+	// 	readings.endReading,
+	// 	typeof readings.startReading,
+	// 	typeof readings.endReading,
+	// );
 	res.json({ readings });
 });
 
